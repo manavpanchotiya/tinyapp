@@ -29,6 +29,11 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${id}`);
 });
 
+app.post("/urls/delete/:id", (req, res) => {
+  const id = req.params.id;
+  delete urlDatabase[id];
+  res.redirect("/urls");
+})
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });

@@ -32,10 +32,16 @@
             <tr>
               <td><%= id %></td>
               <td><%= urls[id] %></td>
+              <td> 
+                <form method="POST" action="/urls/delete/<%= id %>">
+                  <button type="submit"> Delete </button>
+                </form>
+              </td>
             </tr>
           <% } %>
         </tbody>
       </table>
+      
     </main>
     <!-- Bootstrap JS -->
     <script

@@ -29,11 +29,21 @@ app.post("/urls", (req, res) => {
   res.redirect(`/urls/${id}`);
 });
 
+//delete url
 app.post("/urls/delete/:id", (req, res) => {
   const id = req.params.id;
   delete urlDatabase[id];
   res.redirect("/urls");
 });
+
+// edit url
+app.post("/urls/:id", (req, res) => {
+  const shortURL = req.params.id;
+  const newLongURL = req.body.newLongURL;
+  urlDatabase[shortURL] = newLongURL;
+  res.redirect("/urls/");
+});
+
 app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });

@@ -20,13 +20,13 @@ app.get("/", (req, res) => {
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase};
   res.render("urls_index", templateVars);
-})
+});
 
 app.post("/urls", (req, res) => {
   const longURL = req.body.longURL;
   const id = generateRandomString();
   urlDatabase[id] = longURL;
-  res.redirect(`/urls/${id}`); 
+  res.redirect(`/urls/${id}`);
 });
 
 app.get("/urls/new", (req, res) => {
@@ -42,7 +42,7 @@ app.get("/u/:id", (req,res) => {
   const id = req.params.id;
   const longURL = urlDatabase[id];
   res.redirect(longURL);
-})
+});
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
@@ -50,4 +50,4 @@ app.get("/urls.json", (req, res) => {
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
-})
+});

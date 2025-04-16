@@ -19,16 +19,17 @@
       </div>
     
       <div class="ml-auto d-flex align-items-center">
-      <% if(username) { %>
+      <% if(user) { %>
+        <span class="text-white mr-2">Logged in as: <%= user.email %> </span>
         <form class="form-inline" method="POST" action="/logout">
-          <label>Logged in as: <%= username %> </label>
+           
           <button type="submit" class="btn btn-primary"> LogOut </button>
         </form>
 
         <% } else{ %>
           <form class="form-inline" method="POST" action="/login">
             <label for="username"> </label>
-            <input type="text" id="username" name="username" placeholder="Username">
+            <input type="text" id="username" name="username" placeholder="Username" class="form-control mr-2">
             <button type="submit" class="btn btn-primary"> LogIn </button>
           </form>
         <% } %>

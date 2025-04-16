@@ -15,6 +15,21 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com",
 };
 
+//stores and access users 
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
+}
+
+//get index page
 app.get("/", (req, res) => {
   res.send("Hello!");
 });
@@ -57,6 +72,19 @@ app.post("/logout", (req, res) => {
 //get register page route
 app.get("/register", (req, res) => {
   res.render("register");
+});
+
+//post register
+app.post("/register", (req, res) => {
+  const id = generateRandomString();
+  const email = req.body.email;
+  const password = req.body.password;
+  res.cookie('user_id', id);
+  users[id] = id;
+  users[email] = email;
+  users[password] = password;
+  console.log(`${users[email]}`); //for testing/debug
+  res.redirect("/urls");
 })
 
 app.get("/urls", (req, res) => {

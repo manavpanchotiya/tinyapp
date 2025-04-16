@@ -54,6 +54,11 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
+//get register page route
+app.get("/register", (req, res) => {
+  res.render("register");
+})
+
 app.get("/urls", (req, res) => {
   const username = req.cookies.username; // Assume cookie stores username
   const templateVars = {

@@ -66,9 +66,14 @@ app.post("/urls/:id", (req, res) => {
 
 //username login
 app.post("/login", (req, res) => {
-  const username = req.body.username;
   res.cookie('user_id', users.id);
   res.redirect("/urls");
+});
+
+//new login template
+app.get("/login", (req, res) => {
+  res.render("login");
+
 });
 
 //logout

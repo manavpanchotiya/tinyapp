@@ -20,12 +20,12 @@
     
       <div class="ml-auto d-flex align-items-center">
       <% if(!user) { %>
-        <a href="/login"> <button class="btn btn-outline-primary">Log In</button></a>
-        <a href="/register"> <button class="btn btn-outline-primary ">Register</button></a>
+        <a href="/login"> <button class="btn btn-success">Log In</button></a>
+        <a href="/register" class="btn btn-primary mr-2">Register</a>
         <% } else { %>
         <span class="text-white mr-2">Logged in as: <%= user.email %> </span>
         <form class="form-inline" method="POST" action="/logout">
-          <button type="submit" class="btn btn-primary"> LogOut </button>
+          <button type="submit" class="btn btn-danger"> LogOut </button>
         </form>
         <% } %>
             

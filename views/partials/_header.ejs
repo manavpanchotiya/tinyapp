@@ -19,20 +19,16 @@
       </div>
     
       <div class="ml-auto d-flex align-items-center">
-      <% if(user) { %>
+      <% if(!user) { %>
+        <a href="/views/login.ejs"> <button class="btn btn-outline-primary">Log In</button></a>
+        <a href="/views/register.ejs"> <button class="btn btn-outline-primary ">Register</button></a>
+        <% } else { %>
         <span class="text-white mr-2">Logged in as: <%= user.email %> </span>
         <form class="form-inline" method="POST" action="/logout">
-           
           <button type="submit" class="btn btn-primary"> LogOut </button>
         </form>
-
-        <% } else{ %>
-          <form class="form-inline" method="POST" action="/login">
-            <label for="username"> </label>
-            <input type="text" id="username" name="username" placeholder="Username" class="form-control mr-2">
-            <button type="submit" class="btn btn-primary"> LogIn </button>
-          </form>
         <% } %>
+            
       </div>         
   </nav>
 </header>

@@ -10,6 +10,14 @@ function generateRandomString() {
   return Math.random().toString(36).substring(2, 8);
 }
 
+function getUserByEmail(email) {
+  for (let user in users) {
+    if (users[user].email === email) {
+      return users[user];
+    }
+  }
+}
+
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com",
@@ -76,9 +84,20 @@ app.get("/register", (req, res) => {
 
 //post register
 app.post("/register", (req, res) => {
-  const id = generateRandomString();
+  
   const email = req.body.email;
   const password = req.body.password;
+  
+  
+  if (!email || !password || email.trim() === '' || password.trim() === '') {
+    return res.status(400).send('Email or password cannot be empty');
+  }
+
+  if (getUserByEmail(email)) {
+    return res.status(400).send("Already registered with this email");
+  }
+
+  const id = generateRandomString();
   const user = {id, email, password};
   users[id] = user;
   res.cookie('user_id', id);

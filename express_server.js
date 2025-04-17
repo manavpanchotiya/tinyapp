@@ -66,7 +66,17 @@ app.post("/urls/:id", (req, res) => {
 
 //username login
 app.post("/login", (req, res) => {
-  res.cookie('user_id', users.id);
+  const email = req.body.email;
+  const password = req.body.password;
+
+  const user = getUserByEmail(email);
+  if (!user) {
+    return res.status(403).send("User not found with this email address.");
+  }
+  if (user.password !== password) {
+    return res.status(403).send("Incorrect password.");
+  }
+  res.cookie('user_id', user.id);
   res.redirect("/urls");
 });
 
@@ -79,7 +89,7 @@ app.get("/login", (req, res) => {
 //logout
 app.post("/logout", (req, res) => {
   res.clearCookie('user_id');
-  res.redirect("/urls");
+  res.redirect("/login");
 });
 
 //get register page route
@@ -105,7 +115,7 @@ app.post("/register", (req, res) => {
   const id = generateRandomString();
   const user = {id, email, password};
   users[id] = user;
-  res.cookie('user_id', id);
+  res.cookie('user_id', user.id);
   res.redirect("/urls");
 });
 

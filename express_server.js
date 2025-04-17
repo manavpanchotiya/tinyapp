@@ -37,7 +37,7 @@ const users = {
   },
 };
 //Fetch info/view info => app.get request
-//Modify/Create new info => app.post 
+//Modify/Create new info => app.post
 
 //get index page //
 app.get("/", (req, res) => {
@@ -50,7 +50,7 @@ app.post("/urls", (req, res) => {
 
   if (!user) {
     return res.status(403).send('<h1>You must be logged in to shorten URLs</h1><p></p>');
-  }  
+  }
   const newLongURL = req.body.longURL;
   const id = generateRandomString();
 
@@ -93,10 +93,10 @@ app.post("/login", (req, res) => {
 app.get("/login", (req, res) => {
   const userId = req.cookies.user_id;
   const user = users[userId];
-  if (user){
+  if (user) {
     res.redirect("/urls");
-  } else{
-  res.render("login");
+  } else {
+    res.render("login");
   }
 });
 
@@ -110,9 +110,9 @@ app.post("/logout", (req, res) => {
 app.get("/register", (req, res) => {
   const userId = req.cookies.user_id;
   const user = users[userId];
-  if (user){
+  if (user) {
     res.redirect("/urls");
-  } else{
+  } else {
     res.render("register");
   }
 });
@@ -154,7 +154,7 @@ app.get("/urls/new", (req, res) => {
   const userId = req.cookies["user_id"];
   const user = users[userId];
   
-  if (!user){
+  if (!user) {
     return res.redirect("/login");
     
   }

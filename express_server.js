@@ -82,8 +82,12 @@ app.post("/login", (req, res) => {
 
 //new login template
 app.get("/login", (req, res) => {
+  const isLoggedIn = req.cookies.user_id;
+  if (isLoggedIn){
+    res.redirect("/urls");
+  } else{
   res.render("login");
-
+  }
 });
 
 //logout
@@ -94,7 +98,12 @@ app.post("/logout", (req, res) => {
 
 //get register page route
 app.get("/register", (req, res) => {
-  res.render("register");
+  const isLoggedIn = req.cookies.user_id;
+  if (isLoggedIn){
+    res.redirect("/urls");
+  } else{
+    res.render("register");
+  }
 });
 
 //post register

@@ -21,6 +21,7 @@ const urlsForUser = function(id, urlDatabase) {
   return userUrls;
 };
 
+//helper function to get URLs for specific user
 const urlDatabase = {
   "b2xVn2": {
     longURL: "http://www.lighthouselabs.ca",
@@ -43,14 +44,13 @@ const users = {
     password: "dishwasher-funk",
   },
 };
-//Fetch info/view info => app.get request
-//Modify/Create new info => app.post
 
-//get index page //
+//index page route
 app.get("/", (req, res) => {
-  res.send("Hello!");
+  res.send("Welcome to TinyApp!");
 });
 
+//creates new shrt URL
 app.post("/urls", (req, res) => {
   const userId = req.session.user_id;
   const user = users[userId];
@@ -72,7 +72,7 @@ app.post("/urls/delete/:id", (req, res) => {
   res.redirect("/urls");
 });
 
-// edit url
+//edit url
 app.post("/urls/:id", (req, res) => {
   const userId = req.session.user_id;
   const shortURL = req.params.id;
@@ -94,7 +94,7 @@ app.post("/urls/:id", (req, res) => {
   res.redirect("/urls/");
 });
 
-//username login
+//user login form submission
 app.post("/login", (req, res) => {
   const email = req.body.email.trim();
   const password = req.body.password.trim();
@@ -107,11 +107,11 @@ app.post("/login", (req, res) => {
   if (!bcrypt.compareSync(password, user.password)) {
     return res.status(403).send("Incorrect password.");
   }
-  req.session.user_id = user.id;
-  res.redirect("/urls");
+  req.session.user_id = user.id; //sets user session
+  res.redirect("/urls"); // redirects to urls
 });
 
-//new login template
+//login template
 app.get("/login", (req, res) => {
   const userId = req.session.user_id;
   const user = users[userId];
@@ -128,7 +128,7 @@ app.post("/logout", (req, res) => {
   res.redirect("/login");
 });
 
-//get register page route
+//get register page
 app.get("/register", (req, res) => {
   const userId = req.session.user_id;
   const user = users[userId];
@@ -139,7 +139,7 @@ app.get("/register", (req, res) => {
   }
 });
 
-//post register
+//post register form
 app.post("/register", (req, res) => {
   
   const email = req.body.email;
@@ -150,7 +150,7 @@ app.post("/register", (req, res) => {
   }
 
   if (getUserByEmail(email, users)) {
-    return res.status(400).send("Already registered with this email");
+    return res.status(400).send(`<h2>Already registered with this email</h2> <p><a href="/login">Login here</a></p>`);
   }
 
   const hashedPassword = bcrypt.hashSync(password,10);
@@ -163,6 +163,7 @@ app.post("/register", (req, res) => {
   res.redirect("/urls");
 });
 
+//renders urls list for logged in user
 app.get("/urls", (req, res) => {
   const userId = req.session.user_id;
   const user = users[userId];
@@ -179,6 +180,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+//shows page to create new url
 app.get("/urls/new", (req, res) => {
   const userId = req.session.user_id;
   const user = users[userId];
@@ -214,6 +216,7 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+//redirects from short to long URL page
 app.get("/u/:id", (req,res) => {
   const id = req.params.id;
   const urlEntry = urlDatabase[id];
@@ -225,12 +228,9 @@ app.get("/u/:id", (req,res) => {
   res.redirect(longURL);
 });
 
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
+//starts the server
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`TinyApp listening on port ${PORT}!`);
 });
 
 module.exports = { urlsForUser };

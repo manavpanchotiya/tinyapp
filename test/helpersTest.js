@@ -16,14 +16,14 @@ const testUsers = {
 };
 
 describe('getUserByEmail', function() {
-  it('should return a user with valid email', function() { 
+  it("should return a user object when provided with an email that exists in the database", function() { 
     const user = getUserByEmail("user@example.com", testUsers)
     const expectedUserID = "userRandomID";
     assert.strictEqual(user.id, expectedUserID);
     assert.strictEqual(user.email, "user@example.com");
   });
 
-  it('should return undefined', function() {
+  it("should return undefined when provided with an email that doesn't exist in the database", function() {
     const user = getUserByEmail("noemail@example.com", testUsers)
     assert.strictEqual(user, undefined);
   });

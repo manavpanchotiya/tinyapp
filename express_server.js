@@ -1,11 +1,14 @@
 const express = require("express");
-const cookieParser = require('cookie-parser');
+const cookieSession = require('cookie-session');
 const app = express();
 const PORT = 8080; // default port 8080
 const bcrypt = require("bcryptjs");
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true}));
-app.use(cookieParser());
+app.use(cookieSession({
+  name: 'session',
+  keys: ['f6d8a74b17e9c602']
+}));
 
 function generateRandomString() {
   return Math.random().toString(36).substring(2, 8);
@@ -60,7 +63,7 @@ app.get("/", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  const userId = req.cookies["user_id"];
+  const userId = req.session.user_id;
   const user = users[userId];
 
   if (!user) {
@@ -69,7 +72,7 @@ app.post("/urls", (req, res) => {
   const newLongURL = req.body.longURL;
   const id = generateRandomString();
 
-  urlDatabase[id] = { longURL: newLongURL, userID: userId };
+  urlDatabase[id] = { longURL: newLongURL, userId: userId };
   res.redirect(`/urls/${id}`);
 });
 
@@ -82,7 +85,7 @@ app.post("/urls/delete/:id", (req, res) => {
 
 // edit url
 app.post("/urls/:id", (req, res) => {
-  const userId = req.cookies["user_id"];
+  const userId = req.session.user_id;
   const shortURL = req.params.id;
   const urlEntry = urlDatabase[shortURL];
 
@@ -94,7 +97,7 @@ app.post("/urls/:id", (req, res) => {
     return res.status(401).send("URL not found");
   }
 
-  if (urlEntry.userID !== userId) {
+  if (urlEntry.userId !== userId) {
     return res.status(403).send("You don't own this URL");
   }
 
@@ -115,13 +118,13 @@ app.post("/login", (req, res) => {
   if (!bcrypt.compareSync(password, user.password)) {
     return res.status(403).send("Incorrect password.");
   }
-  res.cookie('user_id', user.id);
+  req.session.user_id = user.id;
   res.redirect("/urls");
 });
 
 //new login template
 app.get("/login", (req, res) => {
-  const userId = req.cookies.user_id;
+  const userId = req.session.user_id;
   const user = users[userId];
   if (user) {
     res.redirect("/urls");
@@ -132,13 +135,13 @@ app.get("/login", (req, res) => {
 
 //logout
 app.post("/logout", (req, res) => {
-  res.clearCookie('user_id');
+  req.session = null;
   res.redirect("/login");
 });
 
 //get register page route
 app.get("/register", (req, res) => {
-  const userId = req.cookies.user_id;
+  const userId = req.session.user_id;
   const user = users[userId];
   if (user) {
     res.redirect("/urls");
@@ -166,12 +169,13 @@ app.post("/register", (req, res) => {
   const id = generateRandomString();
   const user = {id, email, password: hashedPassword};
   users[id] = user;
-  res.cookie('user_id', user.id);
+  req.session.user_id = user.id;
+  
   res.redirect("/urls");
 });
 
 app.get("/urls", (req, res) => {
-  const userId = req.cookies["user_id"];
+  const userId = req.session.user_id;
   const user = users[userId];
   
   if (!user) {
@@ -187,7 +191,7 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const userId = req.cookies["user_id"];
+  const userId = req.session.user_id;
   const user = users[userId];
   
   if (!user) {
@@ -201,24 +205,23 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const userId = req.cookies["user_id"];
+  const userId = req.session.user_id;
   const user = users[userId];
   const shortURL = req.params.id;
   
-  if (!user) {
-    return res.status(401).send(`<h2>You must be logged in to view the URL</h2><p><a href="/login">Login</a></p>`);
-  }
-
   if (!urlDatabase[shortURL]) {
     return res.status(404).send("<h2>URL not found</h2>");
   }
 
-  if (urlDatabase[shortURL].userID !== userId) {
+  if (urlDatabase[shortURL].userId !== userId) {
     return res.status(403).send(`<h2> You do not have permission to view this URL. </h2>`);
   }
 
+  if (!user) {
+    return res.status(401).send(`<h2>You must be logged in to view the URL</h2><p><a href="/login">Login</a></p>`);
+  }
+
   const templateVars = { id: shortURL, longURL: urlDatabase[shortURL].longURL, user};
-  
   res.render("urls_show", templateVars);
 });
 

@@ -3,6 +3,8 @@ const cookieSession = require('cookie-session');
 const app = express();
 const PORT = 8080; // default port 8080
 const bcrypt = require("bcryptjs");
+const { getUserByEmail } = require("./helpers");
+console.log(typeof getUserByEmail);
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true}));
 app.use(cookieSession({
@@ -10,19 +12,11 @@ app.use(cookieSession({
   keys: ['f6d8a74b17e9c602', 'gtdg6458hfgh547q']
 }));
 
-function generateRandomString() {
+const generateRandomString = function() {
   return Math.random().toString(36).substring(2, 8);
-}
+};
 
-function getUserByEmail(email) {
-  for (let user in users) {
-    if (users[user].email === email) {
-      return users[user];
-    }
-  }
-}
-
-function urlsForUser(id) {
+const urlsForUser = function(id) {
   const userUrls = {};
   for (const shortURL in urlDatabase) {
     if (urlDatabase[shortURL].userId === id) {
@@ -30,7 +24,7 @@ function urlsForUser(id) {
     }
   }
   return userUrls;
-}
+};
 
 const urlDatabase = {
   "b2xVn2": {
@@ -111,7 +105,7 @@ app.post("/login", (req, res) => {
   const password = req.body.password.trim();
   
 
-  const user = getUserByEmail(email);
+  const user = getUserByEmail(email, users);
   if (!user) {
     return res.status(403).send("User not found with this email address.");
   }
@@ -160,7 +154,7 @@ app.post("/register", (req, res) => {
     return res.status(400).send('Email or password cannot be empty');
   }
 
-  if (getUserByEmail(email)) {
+  if (getUserByEmail(email, users)) {
     return res.status(400).send("Already registered with this email");
   }
 

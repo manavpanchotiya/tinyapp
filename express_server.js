@@ -7,7 +7,7 @@ app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true}));
 app.use(cookieSession({
   name: 'session',
-  keys: ['f6d8a74b17e9c602']
+  keys: ['f6d8a74b17e9c602', 'gtdg6458hfgh547q']
 }));
 
 function generateRandomString() {

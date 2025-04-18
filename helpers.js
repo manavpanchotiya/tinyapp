@@ -8,7 +8,7 @@ const getUserByEmail = function(email, users) {
       return users[user];
     }
   }
-  return null;
+  return undefined;
 };
 
 module.exports = { generateRandomString, getUserByEmail };

@@ -11,7 +11,7 @@ app.use(cookieSession({
   keys: ['f6d8a74b17e9c602', 'gtdg6458hfgh547q']
 }));
 
-const urlsForUser = function(id) {
+const urlsForUser = function(id, urlDatabase) {
   const userUrls = {};
   for (const shortURL in urlDatabase) {
     if (urlDatabase[shortURL].userId === id) {
@@ -171,7 +171,7 @@ app.get("/urls", (req, res) => {
     return res.status(401).send(`<h2>You must be logged in to view URLs.</h2><p><a href="/register">Register</a></p>`);
   }
 
-  const userUrls = urlsForUser(userId);
+  const userUrls = urlsForUser(userId, urlDatabase);
   const templateVars = {
     urls: userUrls,
     user: user
@@ -232,3 +232,5 @@ app.get("/urls.json", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
+
+module.exports = { urlsForUser };

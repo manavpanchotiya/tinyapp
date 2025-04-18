@@ -107,8 +107,8 @@ app.post("/urls/:id", (req, res) => {
 
 //username login
 app.post("/login", (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
+  const email = req.body.email.trim();
+  const password = req.body.password.trim();
   
 
   const user = getUserByEmail(email);

@@ -18,9 +18,23 @@ function getUserByEmail(email) {
   }
 }
 
+function urlsForUser(id) {
+  const userUrls = {};
+  for (const shortURL in urlDatabase) {
+    if (urlDatabase[shortURL].userId === id) {
+      userUrls[shortURL] = urlDatabase[shortURL];
+    }
+  }
+  return userUrls;
+}
+
 const urlDatabase = {
-  "b2xVn2": { longURL: "http://www.lighthouselabs.ca", userId: "userRandomID" },
-  "9sm5xK": { longURL: "http://www.google.com", userId: "user2RandomID"}
+  "b2xVn2": {
+    longURL: "http://www.lighthouselabs.ca",
+    userId: "userRandomID" },
+  "9sm5xK": {
+    longURL: "http://www.google.com",
+    userId: "user2RandomID"}
 };
 
 //stores and access users
@@ -49,12 +63,12 @@ app.post("/urls", (req, res) => {
   const user = users[userId];
 
   if (!user) {
-    return res.status(403).send('<h1>You must be logged in to shorten URLs</h1><p></p>');
+    return res.status(403).send('<h1>You must be logged in to view short URLs</h1><p></p>');
   }
   const newLongURL = req.body.longURL;
   const id = generateRandomString();
 
-  urlDatabase[id] = { longURL: newLongURL, userId };
+  urlDatabase[id] = { longURL: newLongURL, userID: userId };
   res.redirect(`/urls/${id}`);
 });
 
@@ -67,9 +81,23 @@ app.post("/urls/delete/:id", (req, res) => {
 
 // edit url
 app.post("/urls/:id", (req, res) => {
+  const userId = req.cookies["user_id"];
   const shortURL = req.params.id;
-  const newLongURL = req.body.newLongURL;
-  urlDatabase[shortURL] = newLongURL;
+  const urlEntry = urlDatabase[shortURL];
+
+  if (!userId) {
+    return res.status(401).send("You must be logged in to edit URL.");
+  }
+
+  if (!urlEntry) {
+    return res.status(401).send("URL not found");
+  }
+
+  if (urlEntry.userID !== userId) {
+    return res.status(403).send("You don't own this URL");
+  }
+
+  urlEntry.longURL = req.body.newLongURL;
   res.redirect("/urls/");
 });
 
@@ -143,8 +171,13 @@ app.get("/urls", (req, res) => {
   const userId = req.cookies["user_id"];
   const user = users[userId];
   
+  if (!user) {
+    return res.status(401).send(`<h2>You must be logged in to view URLs.</h2><p><a href="/register">Register</a></p>`);
+  }
+
+  const userUrls = urlsForUser(userId);
   const templateVars = {
-    urls: urlDatabase,
+    urls: userUrls,
     user: user
   };
   res.render("urls_index", templateVars);
@@ -160,16 +193,28 @@ app.get("/urls/new", (req, res) => {
   }
   
   const templateVars = { user };
-  console.log(templateVars);
   res.render("urls_new", templateVars);
-  
-    
+      
 });
 
 app.get("/urls/:id", (req, res) => {
   const userId = req.cookies["user_id"];
   const user = users[userId];
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id].longURL, user};
+  const shortURL = req.params.id;
+  
+  if (!user) {
+    return res.status(401).send(`<h2>You must be logged in to view the URL</h2><p><a href="/login">Login</a></p>`);
+  }
+
+  if (!urlDatabase[shortURL]) {
+    return res.status(404).send("<h2>URL not found</h2>");
+  }
+
+  if (urlDatabase[shortURL].userID !== userId) {
+    return res.status(403).send(`<h2> You do not have permission to view this URL. </h2>`);
+  }
+
+  const templateVars = { id: shortURL, longURL: urlDatabase[shortURL].longURL, user};
   
   res.render("urls_show", templateVars);
 });

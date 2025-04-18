@@ -4,7 +4,6 @@ const app = express();
 const PORT = 8080; // default port 8080
 const bcrypt = require("bcryptjs");
 const { getUserByEmail } = require("./helpers");
-console.log(typeof getUserByEmail);
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true}));
 app.use(cookieSession({

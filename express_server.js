@@ -1,7 +1,7 @@
 const express = require("express");
 const cookieSession = require('cookie-session');
 const app = express();
-const PORT = 8080; // default port 8080
+const PORT = 8080;
 const bcrypt = require("bcryptjs");
 const { generateRandomString, getUserByEmail } = require("./helpers");
 app.set("view engine", "ejs");
@@ -83,15 +83,15 @@ app.post("/urls/:id", (req, res) => {
   }
 
   if (!urlEntry) {
-    return res.status(401).send("URL not found");
+    return res.status(404).send("URL not found.");
   }
 
   if (urlEntry.userId !== userId) {
-    return res.status(403).send("You don't own this URL");
+    return res.status(403).send("You don't own this URL.");
   }
 
   urlEntry.longURL = req.body.newLongURL;
-  res.redirect("/urls/");
+  res.redirect("/urls");
 });
 
 //user login form submission
@@ -146,7 +146,7 @@ app.post("/register", (req, res) => {
   const password = req.body.password;
   
   if (!email || !password || email.trim() === '' || password.trim() === '') {
-    return res.status(400).send('Email or password cannot be empty');
+    return res.status(400).send('Email or password cannot be empty.');
   }
 
   if (getUserByEmail(email, users)) {
@@ -199,18 +199,18 @@ app.get("/urls/:id", (req, res) => {
   const userId = req.session.user_id;
   const user = users[userId];
   const shortURL = req.params.id;
+
+  if (!user) {
+    return res.status(401).send(`<h2>You must be logged in to view the URL.</h2><p><a href="/login">Login</a></p>`);
+  }
   
   if (!urlDatabase[shortURL]) {
-    return res.status(404).send("<h2>URL not found</h2>");
+    return res.status(404).send("<h2>URL not found.</h2>");
   }
 
   if (urlDatabase[shortURL].userId !== userId) {
     return res.status(403).send(`<h2> You do not have permission to view this URL. </h2>`);
-  }
-
-  if (!user) {
-    return res.status(401).send(`<h2>You must be logged in to view the URL</h2><p><a href="/login">Login</a></p>`);
-  }
+  }  
 
   const templateVars = { id: shortURL, longURL: urlDatabase[shortURL].longURL, user};
   res.render("urls_show", templateVars);

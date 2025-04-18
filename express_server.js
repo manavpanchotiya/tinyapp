@@ -3,17 +3,13 @@ const cookieSession = require('cookie-session');
 const app = express();
 const PORT = 8080; // default port 8080
 const bcrypt = require("bcryptjs");
-const { getUserByEmail } = require("./helpers");
+const { generateRandomString, getUserByEmail } = require("./helpers");
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true}));
 app.use(cookieSession({
   name: 'session',
   keys: ['f6d8a74b17e9c602', 'gtdg6458hfgh547q']
 }));
-
-const generateRandomString = function() {
-  return Math.random().toString(36).substring(2, 8);
-};
 
 const urlsForUser = function(id) {
   const userUrls = {};
